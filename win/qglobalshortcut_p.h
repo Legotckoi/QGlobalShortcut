@@ -26,7 +26,7 @@ public slots:
 private:
    unsigned int key;
    unsigned int modifiers;
-   int id;
+   unsigned int id;
 };
 
 #endif // QGLOBALSHORTCUTPRIVATE_H
