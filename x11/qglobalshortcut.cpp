@@ -148,8 +148,48 @@ namespace
     }
 }
 
-QGlobalShortcut::QGlobalShortcut(QObject *parent) : QObject(parent)
+class QGlobalData
 {
+    Q_PROPERTY(unsigned int key READ key WRITE setKey)
+    Q_PROPERTY(unsigned int modifier READ modifier WRITE setModifier)
+
+public:
+    QGlobalData() {}
+
+    QGlobalData(const QGlobalData &other) :
+        m_key(other.m_key),
+        m_modifier(other.m_modifier)
+    {
+
+    }
+
+    unsigned int key(){return m_key;}
+    unsigned int modifier(){return m_modifier;}
+    void setkey(unsigned int key){m_key = key;}
+    void setModifier(unsigned int modifier){m_modifier = modifier;}
+
+private:
+    unsigned int m_key;
+    unsigned int m_modifier;
+};
+
+class QGlobalShortcutPrivate
+{
+public:
+    QKeySequence keys;
+    QList<QGlobalData*>listKeys;
+
+    QGlobalShortcutPrivate() {
+
+    }
+};
+
+QGlobalShortcut::QGlobalShortcut(QObject *parent) :
+    QObject(parent),
+    sPrivate(new QGlobalShortcutPrivate)
+{
+    m_display = QX11Info::display();
+    m_win = DefaultRootWindow(m_display);
     qApp->installNativeEventFilter(this);
 }
 
@@ -158,15 +198,19 @@ bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *messa
     Q_UNUSED(eventType)
     Q_UNUSED(result)
 
-    xcb_key_press_event_t *keyEvent = 0;
-    if (eventType == "xcb_generic_event_t") {
-        xcb_generic_event_t *event = static_cast<xcb_generic_event_t *>(message);
-        if ((event->response_type & 127) == XCB_KEY_PRESS){
-            keyEvent = static_cast<xcb_key_press_event_t *>(message);
-            foreach (quint32 maskMods, maskModifiers()) {
-                if((keyEvent->state == (X11KeyModificator(keys) | maskMods ))
-                        &&  keyEvent->detail == X11HotKey(m_display,keys)){
-                    emit activated();
+    if(!sPrivate->keys.isEmpty()){
+        xcb_key_press_event_t *keyEvent = 0;
+        if (eventType == "xcb_generic_event_t") {
+            xcb_generic_event_t *event = static_cast<xcb_generic_event_t *>(message);
+            if ((event->response_type & 127) == XCB_KEY_PRESS){
+                keyEvent = static_cast<xcb_key_press_event_t *>(message);
+                foreach (QGlobalData *data, sPrivate->listKeys) {
+                    foreach (quint32 maskMods, maskModifiers()) {
+                        if((keyEvent->state == (data->modifier() | maskMods ))
+                                &&  keyEvent->detail == data->key()){
+                            emit activated();
+                        }
+                    }
                 }
             }
         }
@@ -176,23 +220,29 @@ bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *messa
 
 bool QGlobalShortcut::setShortcut(const QKeySequence &keySequence)
 {
-    unsetShortcut();
-    keys = keySequence;
-    foreach (quint32 maskMods, maskModifiers()) {
-        XGrabKey(m_display, X11HotKey(m_display, keys) , X11KeyModificator(keys) | maskMods, m_win,True, GrabModeAsync, GrabModeAsync);
+    if(!sPrivate->keys.isEmpty()) unsetShortcut();
+    sPrivate->keys = keySequence;
+    QStringList list = sPrivate->keys.toString().split(", ");
+    foreach (QString str, list) {
+        QGlobalData * data = new QGlobalData();
+        data->setkey(X11HotKey(m_display, QKeySequence(str)));
+        data->setModifier(X11KeyModificator(QKeySequence(str)));
+        sPrivate->listKeys.append(data);
+        foreach (quint32 maskMods, maskModifiers()) {
+            XGrabKey(m_display, data->key() , data->modifier() | maskMods, m_win,True, GrabModeAsync, GrabModeAsync);
+        }
     }
     return true;
 }
 
 bool QGlobalShortcut::unsetShortcut()
 {
-    m_display = QX11Info::display();
-    m_win = DefaultRootWindow(m_display);
-    if(!keys.isEmpty()){
-        foreach (quint32 maskMods, maskModifiers()) {
-            XUngrabKey(m_display, X11HotKey(m_display, keys),X11KeyModificator(keys) | maskMods,m_win);
+    if(!sPrivate->keys.isEmpty()){
+        foreach (QGlobalData *data, sPrivate->listKeys) {
+            foreach (quint32 maskMods, maskModifiers()) {
+                XUngrabKey(m_display, data->key(),data->modifier() | maskMods, m_win);
+            }
         }
     }
     return true;
 }
-

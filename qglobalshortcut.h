@@ -6,6 +6,8 @@
 #include <QAbstractNativeEventFilter>
 #include <QKeySequence>
 
+class QGlobalShortcutPrivate;
+
 class QGlobalShortcut : public QObject, public QAbstractNativeEventFilter
 {
     Q_OBJECT
@@ -23,7 +25,7 @@ signals:
 public slots:
 
 private:
-   QKeySequence keys;
+    QGlobalShortcutPrivate *sPrivate;
 };
 
 #endif // QGLOBALSHORTCUTPRIVATE_H
