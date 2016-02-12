@@ -13,7 +13,8 @@ linux {
 
 SOURCES += qglobalshortcut.cpp
 win32: SOURCES += win/qglobalshortcut_p.cpp
+linux: SOURCES += x11/qglobalshortcut_p.cpp
 
 HEADERS  += qglobalshortcut.h
-win32: HEADERS += win/qglobalshortcut_p.h
+HEADERS  += qglobalshortcut_p.h
 ```
