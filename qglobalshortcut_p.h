@@ -4,8 +4,7 @@
 #include <QObject>
 #include <QApplication>
 #include <QAbstractNativeEventFilter>
-
-class QKeySequence;
+#include <QKeySequence>
 
 class QGlobalShortcutPrivate : public QObject, public QAbstractNativeEventFilter
 {
@@ -24,9 +23,7 @@ signals:
 public slots:
 
 private:
-   unsigned int key;
-   unsigned int modifiers;
-   unsigned int id;
+   QKeySequence key;
 };
 
 #endif // QGLOBALSHORTCUTPRIVATE_H
