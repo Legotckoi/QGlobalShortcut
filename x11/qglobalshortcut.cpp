@@ -1,4 +1,4 @@
-#include "qglobalshortcut_p.h"
+#include "qglobalshortcut.h"
 #include <QStringList>
 #include <QDebug>
 #include <QX11Info>
