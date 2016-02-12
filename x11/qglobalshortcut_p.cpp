@@ -53,7 +53,7 @@ namespace
 
 QGlobalShortcutPrivate::QGlobalShortcutPrivate(QObject *parent) : QObject(parent)
 {
-
+    qApp->installNativeEventFilter(this);
 }
 
 bool QGlobalShortcutPrivate::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
