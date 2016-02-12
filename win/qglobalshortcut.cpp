@@ -195,6 +195,13 @@ QGlobalShortcut::QGlobalShortcut(QObject *parent) :
     qApp->installNativeEventFilter(this);
 }
 
+QGlobalShortcut::~QGlobalShortcut()
+{
+    qApp->removeNativeEventFilter(this);
+    unsetShortcut();
+    delete sPrivate;
+}
+
 bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
 {
     Q_UNUSED(eventType)
@@ -233,6 +240,7 @@ bool QGlobalShortcut::unsetShortcut()
         foreach (QGlobalData *data, sPrivate->listKeys) {
             UnregisterHotKey(0, data->id());
         }
+        sPrivate->listKeys.clear();
     }
     return true;
 }

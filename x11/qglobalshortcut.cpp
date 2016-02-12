@@ -193,6 +193,13 @@ QGlobalShortcut::QGlobalShortcut(QObject *parent) :
     qApp->installNativeEventFilter(this);
 }
 
+QGlobalShortcut::~QGlobalShortcut()
+{
+    qApp->removeNativeEventFilter(this);
+    unsetShortcut();
+    delete sPrivate;
+}
+
 bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
 {
     Q_UNUSED(eventType)
@@ -244,6 +251,7 @@ bool QGlobalShortcut::unsetShortcut()
                 XUngrabKey(m_display, data->key(),data->modifier() | maskMods, m_win);
             }
         }
+        sPrivate->listKeys.clear();
     }
     return true;
 }

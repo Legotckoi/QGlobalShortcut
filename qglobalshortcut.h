@@ -13,6 +13,7 @@ class QGlobalShortcut : public QObject, public QAbstractNativeEventFilter
     Q_OBJECT
 public:
     explicit QGlobalShortcut(QObject *parent = nullptr);
+    ~QGlobalShortcut();
 
     bool nativeEventFilter(const QByteArray &eventType, void *message, long *result) override;
 
