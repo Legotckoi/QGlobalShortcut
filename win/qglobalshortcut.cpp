@@ -1,6 +1,5 @@
 #include "qglobalshortcut.h"
 #include <QStringList>
-#include <QKeySequence>
 #include <QDebug>
 #include "windows.h"
 
@@ -107,8 +106,6 @@ namespace
             } else if(str == "F16"){
                 return VK_F16;
             } else if(str == "F17"){
-                return VK_F1;
-            } else if(str == "F1"){
                 return VK_F17;
             } else if(str == "F18"){
                 return VK_F18;
@@ -181,7 +178,7 @@ bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *messa
 
 bool QGlobalShortcut::setShortcut(const QKeySequence &keySequence)
 {
-    if(keys != 0)unsetShortcut();
+    if(!keys.isEmpty())unsetShortcut();
     keys = keySequence;
     return RegisterHotKey(0, winId(keys), winKeyModificator(keys), winHotKey(keys));
 }
