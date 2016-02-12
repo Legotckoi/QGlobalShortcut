@@ -23,7 +23,7 @@ signals:
 public slots:
 
 private:
-   QKeySequence key;
+   QKeySequence keys;
 };
 
 #endif // QGLOBALSHORTCUTPRIVATE_H

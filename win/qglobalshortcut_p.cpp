@@ -153,13 +153,16 @@ namespace
             }
         }
     }
+
+    unsigned int winId(const QKeySequence &keySequence)
+    {
+        return winHotKey(keySequence) ^ winKeyModificator(keySequence);
+    }
 }
 
 QGlobalShortcutPrivate::QGlobalShortcutPrivate(QObject *parent) : QObject(parent)
 {
-    key = 0;
-    modifiers = 0;
-    id = 0;
+
 }
 
 bool QGlobalShortcutPrivate::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
@@ -168,7 +171,7 @@ bool QGlobalShortcutPrivate::nativeEventFilter(const QByteArray &eventType, void
     Q_UNUSED(result)
     MSG* msg = reinterpret_cast<MSG*>(message);
     if(msg->message == WM_HOTKEY){
-        if(msg->wParam == id){
+        if(msg->wParam == winId(keys)){
             emit activated();
             return true;
         }
@@ -178,15 +181,13 @@ bool QGlobalShortcutPrivate::nativeEventFilter(const QByteArray &eventType, void
 
 bool QGlobalShortcutPrivate::registerKeySequence(const QKeySequence &keySequence)
 {
-    unRegisterKeySequence();
-    key = winHotKey(keySequence);
-    modifiers = winKeyModificator(keySequence);
-    id = key ^ modifiers;
-    return RegisterHotKey(0, id, modifiers, key);
+    if(keys != 0)unRegisterKeySequence();
+    keys = keySequence;
+    return RegisterHotKey(0, winId(keys), winKeyModificator(keys), winHotKey(keys));
 }
 
 bool QGlobalShortcutPrivate::unRegisterKeySequence()
 {
-    return UnregisterHotKey(0, id);
+    return UnregisterHotKey(0, winId(keys));
 }
 
