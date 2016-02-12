@@ -1,6 +1,6 @@
 #include "qglobalshortcut.h"
 #include <QStringList>
-#include <QDebug>
+#include <QKeySequence>
 #include "windows.h"
 
 namespace

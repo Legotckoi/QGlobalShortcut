@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QApplication>
 #include <QAbstractNativeEventFilter>
-#include <QKeySequence>
 
 class QGlobalShortcutPrivate;
 
