@@ -157,20 +157,57 @@ namespace
     }
 }
 
-QGlobalShortcut::QGlobalShortcut(QObject *parent) : QObject(parent)
+class QGlobalData
 {
+    Q_PROPERTY(unsigned int id READ id WRITE setId)
 
+public:
+    QGlobalData() {}
+
+    QGlobalData(const QGlobalData &other) :
+        m_id(other.m_id)
+    {
+
+    }
+
+    unsigned int id(){return m_id;}
+    void setId(unsigned int id){m_id = id;}
+
+private:
+    unsigned int m_id;
+};
+
+class QGlobalShortcutPrivate
+{
+public:
+    QKeySequence keys;
+    QList<QGlobalData*>listKeys;
+
+    QGlobalShortcutPrivate() {
+
+    }
+};
+
+QGlobalShortcut::QGlobalShortcut(QObject *parent) :
+    QObject(parent),
+    sPrivate(new QGlobalShortcutPrivate)
+{
+    qApp->installNativeEventFilter(this);
 }
 
 bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
 {
     Q_UNUSED(eventType)
     Q_UNUSED(result)
-    MSG* msg = reinterpret_cast<MSG*>(message);
-    if(msg->message == WM_HOTKEY){
-        if(msg->wParam == winId(keys)){
-            emit activated();
-            return true;
+    if(!sPrivate->keys.isEmpty()){
+        MSG* msg = reinterpret_cast<MSG*>(message);
+        if(msg->message == WM_HOTKEY){
+            foreach (QGlobalData *data, sPrivate->listKeys) {
+                if(msg->wParam == data->id()){
+                    emit activated();
+                    return true;
+                }
+            }
         }
     }
     return false;
@@ -178,13 +215,25 @@ bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *messa
 
 bool QGlobalShortcut::setShortcut(const QKeySequence &keySequence)
 {
-    if(!keys.isEmpty())unsetShortcut();
-    keys = keySequence;
-    return RegisterHotKey(0, winId(keys), winKeyModificator(keys), winHotKey(keys));
+    if(!sPrivate->keys.isEmpty())unsetShortcut();
+    sPrivate->keys = keySequence;
+    QStringList list = sPrivate->keys.toString().split(", ");
+    foreach (QString str, list) {
+        QGlobalData * data = new QGlobalData();
+        data->setId(winId(QKeySequence(str)));
+        sPrivate->listKeys.append(data);
+        RegisterHotKey(0, data->id(), winKeyModificator(QKeySequence(str)), winHotKey(QKeySequence(str)));
+    }
+    return true;
 }
 
 bool QGlobalShortcut::unsetShortcut()
 {
-    return UnregisterHotKey(0, winId(keys));
+    if(!sPrivate->keys.isEmpty()){
+        foreach (QGlobalData *data, sPrivate->listKeys) {
+            UnregisterHotKey(0, data->id());
+        }
+    }
+    return true;
 }
 

@@ -209,6 +209,7 @@ bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *messa
                         if((keyEvent->state == (data->modifier() | maskMods ))
                                 &&  keyEvent->detail == data->key()){
                             emit activated();
+                            return true;
                         }
                     }
                 }
