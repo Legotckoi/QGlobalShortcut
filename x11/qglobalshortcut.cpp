@@ -178,6 +178,7 @@ class QGlobalShortcutPrivate
 public:
     QKeySequence keys;
     QList<QGlobalData*>listKeys;
+    bool enabled;
 
     QGlobalShortcutPrivate() {
 
@@ -190,6 +191,7 @@ QGlobalShortcut::QGlobalShortcut(QObject *parent) :
 {
     m_display = QX11Info::display();
     m_win = DefaultRootWindow(m_display);
+    sPrivate->enabled = true;
     qApp->installNativeEventFilter(this);
 }
 
@@ -205,7 +207,7 @@ bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *messa
     Q_UNUSED(eventType)
     Q_UNUSED(result)
 
-    if(!sPrivate->keys.isEmpty()){
+    if(!sPrivate->keys.isEmpty() && sPrivate->enabled){
         xcb_key_press_event_t *keyEvent = 0;
         if (eventType == "xcb_generic_event_t") {
             xcb_generic_event_t *event = static_cast<xcb_generic_event_t *>(message);
@@ -254,4 +256,28 @@ bool QGlobalShortcut::unsetShortcut()
         sPrivate->listKeys.clear();
     }
     return true;
+}
+
+QKeySequence QGlobalShortcut::shortcut()
+{
+    if(!sPrivate->keys.isEmpty()){
+        return sPrivate->keys();
+    } else {
+        return nullptr;
+    }
+}
+
+bool QGlobalShortcut::isEmpty()
+{
+    return sPrivate->keys.isEmpty();
+}
+
+void QGlobalShortcut::setEnabled(bool enable)
+{
+    sPrivate->enabled = enable;
+}
+
+bool QGlobalShortcut::isEnabled()
+{
+    return sPrivate->enabled;
 }

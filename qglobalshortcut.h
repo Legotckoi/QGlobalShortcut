@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QAbstractNativeEventFilter>
 
+class QKeySequence;
 class QGlobalShortcutPrivate;
 
 class QGlobalShortcut : public QObject, public QAbstractNativeEventFilter
@@ -18,6 +19,11 @@ public:
 
     bool setShortcut(const QKeySequence &keySequence);
     bool unsetShortcut();
+    QKeySequence shortcut();
+    bool isEmpty();
+
+    void setEnabled(bool enable);
+    bool isEnabled();
 
 signals:
     void activated();

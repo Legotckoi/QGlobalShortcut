@@ -182,6 +182,7 @@ class QGlobalShortcutPrivate
 public:
     QKeySequence keys;
     QList<QGlobalData*>listKeys;
+    bool enabled;
 
     QGlobalShortcutPrivate() {
 
@@ -192,6 +193,7 @@ QGlobalShortcut::QGlobalShortcut(QObject *parent) :
     QObject(parent),
     sPrivate(new QGlobalShortcutPrivate)
 {
+    sPrivate->enabled = true;
     qApp->installNativeEventFilter(this);
 }
 
@@ -206,7 +208,7 @@ bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *messa
 {
     Q_UNUSED(eventType)
     Q_UNUSED(result)
-    if(!sPrivate->keys.isEmpty()){
+    if(!sPrivate->keys.isEmpty() && sPrivate->enabled){
         MSG* msg = reinterpret_cast<MSG*>(message);
         if(msg->message == WM_HOTKEY){
             foreach (QGlobalData *data, sPrivate->listKeys) {
@@ -243,5 +245,29 @@ bool QGlobalShortcut::unsetShortcut()
         sPrivate->listKeys.clear();
     }
     return true;
+}
+
+QKeySequence QGlobalShortcut::shortcut()
+{
+    if(!sPrivate->keys.isEmpty()){
+        return sPrivate->keys;
+    } else {
+        return QKeySequence("");
+    }
+}
+
+bool QGlobalShortcut::isEmpty()
+{
+    return sPrivate->keys.isEmpty();
+}
+
+void QGlobalShortcut::setEnabled(bool enable)
+{
+    sPrivate->enabled = enable;
+}
+
+bool QGlobalShortcut::isEnabled()
+{
+    return sPrivate->enabled;
 }
 
