@@ -11,10 +11,8 @@ linux {
     PKGCONFIG += x11
 }
 
-SOURCES += qglobalshortcut.cpp
-win32: SOURCES += win/qglobalshortcut_p.cpp
-linux: SOURCES += x11/qglobalshortcut_p.cpp
+win32: SOURCES += win/qglobalshortcut.cpp
+linux: SOURCES += x11/qglobalshortcut.cpp
 
 HEADERS  += qglobalshortcut.h
-HEADERS  += qglobalshortcut_p.h
 ```
