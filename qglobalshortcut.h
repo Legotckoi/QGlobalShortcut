@@ -6,16 +6,16 @@
 #include <QAbstractNativeEventFilter>
 #include <QKeySequence>
 
-class QGlobalShortcutPrivate : public QObject, public QAbstractNativeEventFilter
+class QGlobalShortcut : public QObject, public QAbstractNativeEventFilter
 {
     Q_OBJECT
 public:
-    explicit QGlobalShortcutPrivate(QObject *parent = nullptr);
+    explicit QGlobalShortcut(QObject *parent = nullptr);
 
     bool nativeEventFilter(const QByteArray &eventType, void *message, long *result) override;
 
-    bool registerKeySequence(const QKeySequence &keySequence);
-    bool unRegisterKeySequence();
+    bool setShortcut(const QKeySequence &keySequence);
+    bool unsetShortcut();
 
 signals:
     void activated();

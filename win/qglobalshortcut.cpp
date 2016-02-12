@@ -160,12 +160,12 @@ namespace
     }
 }
 
-QGlobalShortcutPrivate::QGlobalShortcutPrivate(QObject *parent) : QObject(parent)
+QGlobalShortcut::QGlobalShortcut(QObject *parent) : QObject(parent)
 {
 
 }
 
-bool QGlobalShortcutPrivate::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
+bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
 {
     Q_UNUSED(eventType)
     Q_UNUSED(result)
@@ -179,14 +179,14 @@ bool QGlobalShortcutPrivate::nativeEventFilter(const QByteArray &eventType, void
     return false;
 }
 
-bool QGlobalShortcutPrivate::registerKeySequence(const QKeySequence &keySequence)
+bool QGlobalShortcut::setShortcut(const QKeySequence &keySequence)
 {
-    if(keys != 0)unRegisterKeySequence();
+    if(keys != 0)unsetShortcut();
     keys = keySequence;
     return RegisterHotKey(0, winId(keys), winKeyModificator(keys), winHotKey(keys));
 }
 
-bool QGlobalShortcutPrivate::unRegisterKeySequence()
+bool QGlobalShortcut::unsetShortcut()
 {
     return UnregisterHotKey(0, winId(keys));
 }

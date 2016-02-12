@@ -51,12 +51,12 @@ namespace
     }
 }
 
-QGlobalShortcutPrivate::QGlobalShortcutPrivate(QObject *parent) : QObject(parent)
+QGlobalShortcut::QGlobalShortcut(QObject *parent) : QObject(parent)
 {
     qApp->installNativeEventFilter(this);
 }
 
-bool QGlobalShortcutPrivate::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
+bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
 {
     Q_UNUSED(eventType)
     Q_UNUSED(result)
@@ -77,9 +77,9 @@ bool QGlobalShortcutPrivate::nativeEventFilter(const QByteArray &eventType, void
     return false;
 }
 
-bool QGlobalShortcutPrivate::registerKeySequence(const QKeySequence &keySequence)
+bool QGlobalShortcut::setShortcut(const QKeySequence &keySequence)
 {
-    unRegisterKeySequence();
+    unsetShortcut();
     keys = keySequence;
     foreach (quint32 maskMods, maskModifiers()) {
         XGrabKey(m_display, X11HotKey(m_display, keys) , X11KeyModificator(keys) | maskMods, m_win,True, GrabModeAsync, GrabModeAsync);
@@ -87,11 +87,11 @@ bool QGlobalShortcutPrivate::registerKeySequence(const QKeySequence &keySequence
     return true;
 }
 
-bool QGlobalShortcutPrivate::unRegisterKeySequence()
+bool QGlobalShortcut::unsetShortcut()
 {
     m_display = QX11Info::display();
     m_win = DefaultRootWindow(m_display);
-    if(keys != 0){
+    if(!keys.isEmpty()){
         foreach (quint32 maskMods, maskModifiers()) {
             XUngrabKey(m_display, X11HotKey(m_display, keys),X11KeyModificator(keys) | maskMods,m_win);
         }
