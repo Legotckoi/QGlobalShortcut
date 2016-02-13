@@ -231,7 +231,7 @@ bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *messa
 
 bool QGlobalShortcut::setShortcut(const QKeySequence &keySequence)
 {
-    if(!sPrivate->keys.isEmpty()) unsetShortcut();
+    unsetShortcut();
     sPrivate->keys = keySequence;
     QStringList list = sPrivate->keys.toString().split(", ");
     foreach (QString str, list) {
