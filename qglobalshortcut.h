@@ -17,18 +17,17 @@ public:
 
     bool nativeEventFilter(const QByteArray &eventType, void *message, long *result) override;
 
-    bool setShortcut(const QKeySequence &keySequence);
-    bool unsetShortcut();
     QKeySequence shortcut();
     bool isEmpty();
-
-    void setEnabled(bool enable);
     bool isEnabled();
 
 signals:
     void activated();
 
 public slots:
+    bool setShortcut(const QKeySequence &keySequence);
+    bool unsetShortcut();
+    void setEnabled(bool enable);
 
 private:
     QGlobalShortcutPrivate *sPrivate;

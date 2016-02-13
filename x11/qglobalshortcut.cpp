@@ -198,8 +198,8 @@ QGlobalShortcut::QGlobalShortcut(QObject *parent) :
 
 QGlobalShortcut::~QGlobalShortcut()
 {
-    qApp->removeNativeEventFilter(this);
     unsetShortcut();
+    qApp->removeNativeEventFilter(this);
     delete sPrivate;
 }
 
