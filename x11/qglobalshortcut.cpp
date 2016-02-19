@@ -1,4 +1,5 @@
 #include "qglobalshortcut.h"
+#include <QApplication>
 #include <QStringList>
 #include <QKeySequence>
 #include <QVector>

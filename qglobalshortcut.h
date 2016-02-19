@@ -2,7 +2,6 @@
 #define QGLOBALSHORTCUTPRIVATE_H
 
 #include <QObject>
-#include <QApplication>
 #include <QAbstractNativeEventFilter>
 
 class QKeySequence;
