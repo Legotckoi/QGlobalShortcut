@@ -98,7 +98,7 @@ public:
 
     unsigned int winId(const QKeySequence &keySequence)
     {
-        return this->winHotKey(keySequence) ^ winKeyModificator(keySequence);
+        return this->winHotKey(keySequence) ^ this->winKeyModificator(keySequence);
     }
 };
 
