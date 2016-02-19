@@ -1,160 +1,24 @@
 #include "qglobalshortcut.h"
 #include <QStringList>
 #include <QKeySequence>
+#include <QDebug>
 #include "windows.h"
 
 namespace
 {
-    unsigned int winKeyModificator(const QKeySequence &sequence)
-    {
-        QStringList list = sequence.toString().split("+");
-        unsigned int keyModificator = 0;
+    QString strShortcuts[57] = {"+","Esc","Tab","BackTab","Backspace","Return","Enter","Ins","Del",
+                             "Pause", "Print","SysReq","Clear","Home","End","Left","Up","Right",
+                             "Down","PgUp","PgDown","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12",
+                             "F13","F14","F15","F16","F17","F18","F19","F20","F21","F22","F23","F24",
+                             "Space","*",",","-","/","Media Next","Media Previous","Media Play","Media Stop",
+                             "Volume Down","Volume Up","Volume Mute"};
 
-        foreach (QString str, list) {
-            if(str == "Ctrl"){
-                keyModificator |= MOD_CONTROL;
-                continue;
-            } else if(str == "Alt"){
-                keyModificator |= MOD_ALT;
-                continue;
-            } else if(str == "Shift"){
-                keyModificator |= MOD_SHIFT;
-                continue;
-            } else if(str == "Meta"){
-                keyModificator |= MOD_WIN;
-                continue;
-            }
-        }
-        return keyModificator;
-    }
-
-    unsigned int winHotKey(const QKeySequence &sequence)
-    {
-        QStringList list = sequence.toString().split("+");
-        QString str = list.last();
-        if(str.length() == 0){
-            return VK_ADD;              // return "+"
-        } else if(str.length() == 1){
-            return str.at(0).unicode(); // return Key Letters and Numbers
-        } else {
-            if(str == "Esc"){
-                return VK_ESCAPE;
-            } else if(str == "Tab" || str == "BackTab"){
-                return VK_TAB;
-            } else if(str == "Backspace"){
-                return VK_BACK;
-            } else if(str == "Return" || str == "Enter"){
-                return VK_RETURN;
-            } else if(str == "Ins"){
-                return VK_INSERT;
-            } else if(str == "Del"){
-                return VK_DELETE;
-            } else if(str == "Pause"){
-                return VK_PAUSE;
-            } else if(str == "Print"){
-                return VK_PRINT;
-            } else if(str == "SysReq"){
-                return VK_SNAPSHOT;
-            } else if(str == "Clear"){
-                return VK_CLEAR;
-            } else if(str == "Home"){
-                return VK_HOME;
-            } else if(str == "End"){
-                return VK_END;
-            } else if(str == "Left"){
-                return VK_LEFT;
-            } else if(str == "Up"){
-                return VK_UP;
-            } else if(str == "Right"){
-                return VK_RIGHT;
-            } else if(str == "Down"){
-                return VK_DOWN;
-            } else if(str == "PgUp"){
-                return VK_PRIOR;
-            } else if(str == "PgDown"){
-                return VK_NEXT;
-            } else if(str == "F1"){
-                return VK_F1;
-            } else if(str == "F2"){
-                return VK_F2;
-            } else if(str == "3"){
-                return VK_F3;
-            } else if(str == "F4"){
-                return VK_F4;
-            } else if(str == "F5"){
-                return VK_F5;
-            } else if(str == "F6"){
-                return VK_F6;
-            } else if(str == "F7"){
-                return VK_F7;
-            } else if(str == "F8"){
-                return VK_F8;
-            } else if(str == "F9"){
-                return VK_F9;
-            } else if(str == "F10"){
-                return VK_F10;
-            } else if(str == "F11"){
-                return VK_F11;
-            } else if(str == "F12"){
-                return VK_F12;
-            } else if(str == "F13"){
-                return VK_F13;
-            } else if(str == "F14"){
-                return VK_F14;
-            } else if(str == "F15"){
-                return VK_F15;
-            } else if(str == "F16"){
-                return VK_F16;
-            } else if(str == "F17"){
-                return VK_F17;
-            } else if(str == "F18"){
-                return VK_F18;
-            } else if(str == "F19"){
-                return VK_F19;
-            } else if(str == "F20"){
-                return VK_F20;
-            } else if(str == "F21"){
-                return VK_F21;
-            } else if(str == "F22"){
-                return VK_F22;
-            } else if(str == "F23"){
-                return VK_F23;
-            } else if(str == "F24"){
-                return VK_F24;
-            } else if(str == "Space"){
-                return VK_SPACE;
-            } else if(str == "*"){
-                return VK_MULTIPLY;
-            } else if(str == ","){
-                return VK_SEPARATOR;
-            } else if(str == "-"){
-                return VK_SUBTRACT;
-            } else if(str == "/"){
-                return VK_DIVIDE;
-            } else if(str == "Media Next"){
-                return VK_MEDIA_NEXT_TRACK;
-            } else if(str == "Media Previous"){
-                return VK_MEDIA_PREV_TRACK;
-            } else if(str == "Media Play"){
-                return VK_MEDIA_PLAY_PAUSE;
-            } else if(str == "Media Stop"){
-                return VK_MEDIA_STOP;
-            } else if(str == "Volume Down"){
-                return VK_VOLUME_DOWN;
-            } else if(str == "Volume Up"){
-                return VK_VOLUME_UP;
-            } else if(str == "Volume Mute"){
-                return VK_VOLUME_MUTE;
-            } else {
-                return 0;
-            }
-        }
-    }
-
-    unsigned int winId(const QKeySequence &keySequence)
-    {
-        return winHotKey(keySequence) ^ winKeyModificator(keySequence);
-    }
+    unsigned int codeShortcuts[57] = {VK_ADD,VK_ESCAPE,VK_TAB,VK_TAB,VK_BACK,VK_RETURN,VK_RETURN,VK_INSERT,VK_DELETE,
+                                     VK_PAUSE,VK_PRINT,VK_SNAPSHOT,VK_CLEAR,VK_HOME,VK_END,VK_LEFT,VK_UP,VK_RIGHT,
+                                     VK_DOWN,VK_PRIOR,VK_NEXT,VK_F1,VK_F2,VK_F3,VK_F4,VK_F5,VK_F6,VK_F7,VK_F8,VK_F9,VK_F10,VK_F11,VK_F12,
+                                     VK_F13,VK_F14,VK_F15,VK_F16,VK_F17,VK_F18,VK_F19,VK_F20,VK_F21,VK_F22,VK_F23,VK_F24,
+                                     VK_SPACE,VK_MULTIPLY,VK_SEPARATOR,VK_SUBTRACT,VK_DIVIDE,VK_MEDIA_NEXT_TRACK,VK_MEDIA_PREV_TRACK,VK_MEDIA_PLAY_PAUSE,VK_MEDIA_STOP,
+                                     VK_VOLUME_DOWN,VK_VOLUME_UP,VK_VOLUME_MUTE};
 }
 
 class QGlobalData
@@ -182,10 +46,59 @@ class QGlobalShortcutPrivate
 public:
     QKeySequence keys;
     QList<QGlobalData*>listKeys;
+    QHash <QString, unsigned int>hash;
     bool enabled;
 
     QGlobalShortcutPrivate() {
 
+    }
+
+    void initHash()
+    {
+        for(int i = 0; i < 57; i++){
+            hash.insert(strShortcuts[i],codeShortcuts[i]);
+        }
+    }
+
+    unsigned int winHotKey(const QKeySequence &sequence)
+    {
+        QStringList list = sequence.toString().split("+");
+        QString str = list.last();
+        if(str.length() == 0){
+            return this->hash.value(str);          // return "+"
+        } else if(str.length() == 1){
+            return str.at(0).unicode(); // return Key Letters and Numbers
+        } else {
+            return this->hash.value(str);
+        }
+    }
+
+    unsigned int winKeyModificator(const QKeySequence &sequence)
+    {
+        QStringList list = sequence.toString().split("+");
+        unsigned int keyModificator = 0;
+
+        foreach (QString str, list) {
+            if(str == "Ctrl"){
+                keyModificator |= MOD_CONTROL;
+                continue;
+            } else if(str == "Alt"){
+                keyModificator |= MOD_ALT;
+                continue;
+            } else if(str == "Shift"){
+                keyModificator |= MOD_SHIFT;
+                continue;
+            } else if(str == "Meta"){
+                keyModificator |= MOD_WIN;
+                continue;
+            }
+        }
+        return keyModificator;
+    }
+
+    unsigned int winId(const QKeySequence &keySequence)
+    {
+        return this->winHotKey(keySequence) ^ winKeyModificator(keySequence);
     }
 };
 
@@ -194,6 +107,7 @@ QGlobalShortcut::QGlobalShortcut(QObject *parent) :
     sPrivate(new QGlobalShortcutPrivate)
 {
     sPrivate->enabled = true;
+    sPrivate->initHash();
     qApp->installNativeEventFilter(this);
 }
 
@@ -229,9 +143,9 @@ bool QGlobalShortcut::setShortcut(const QKeySequence &keySequence)
     QStringList list = sPrivate->keys.toString().split(", ");
     foreach (QString str, list) {
         QGlobalData * data = new QGlobalData();
-        data->setId(winId(QKeySequence(str)));
+        data->setId(sPrivate->winId(QKeySequence(str)));
         sPrivate->listKeys.append(data);
-        RegisterHotKey(0, data->id(), winKeyModificator(QKeySequence(str)), winHotKey(QKeySequence(str)));
+        RegisterHotKey(0, data->id(), sPrivate->winKeyModificator(QKeySequence(str)), sPrivate->winHotKey(QKeySequence(str)));
     }
     return true;
 }
