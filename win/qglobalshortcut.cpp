@@ -6,14 +6,14 @@
 
 namespace
 {
-    QString strShortcuts[57] = {"+","Esc","Tab","BackTab","Backspace","Return","Enter","Ins","Del",
+    QString strShortcuts[56] = {"Esc","Tab","BackTab","Backspace","Return","Enter","Ins","Del",
                              "Pause", "Print","SysReq","Clear","Home","End","Left","Up","Right",
                              "Down","PgUp","PgDown","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12",
                              "F13","F14","F15","F16","F17","F18","F19","F20","F21","F22","F23","F24",
                              "Space","*",",","-","/","Media Next","Media Previous","Media Play","Media Stop",
                              "Volume Down","Volume Up","Volume Mute"};
 
-    unsigned int codeShortcuts[57] = {VK_ADD,VK_ESCAPE,VK_TAB,VK_TAB,VK_BACK,VK_RETURN,VK_RETURN,VK_INSERT,VK_DELETE,
+    unsigned int codeShortcuts[56] = {VK_ESCAPE,VK_TAB,VK_TAB,VK_BACK,VK_RETURN,VK_RETURN,VK_INSERT,VK_DELETE,
                                      VK_PAUSE,VK_PRINT,VK_SNAPSHOT,VK_CLEAR,VK_HOME,VK_END,VK_LEFT,VK_UP,VK_RIGHT,
                                      VK_DOWN,VK_PRIOR,VK_NEXT,VK_F1,VK_F2,VK_F3,VK_F4,VK_F5,VK_F6,VK_F7,VK_F8,VK_F9,VK_F10,VK_F11,VK_F12,
                                      VK_F13,VK_F14,VK_F15,VK_F16,VK_F17,VK_F18,VK_F19,VK_F20,VK_F21,VK_F22,VK_F23,VK_F24,
@@ -55,7 +55,7 @@ public:
 
     void initHash()
     {
-        for(int i = 0; i < 57; i++){
+        for(int i = 0; i < 56; i++){
             hash.insert(strShortcuts[i],codeShortcuts[i]);
         }
     }
@@ -65,12 +65,13 @@ public:
         QStringList list = sequence.toString().split("+");
         QString str = list.last();
         if(str.length() == 0){
-            return this->hash.value(str);          // return "+"
+            return VK_ADD;
         } else if(str.length() == 1){
             return str.at(0).unicode(); // return Key Letters and Numbers
         } else {
             return this->hash.value(str);
         }
+        return 0;
     }
 
     unsigned int winKeyModificator(const QKeySequence &sequence)
