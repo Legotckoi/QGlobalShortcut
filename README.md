@@ -2,17 +2,9 @@
 Crossplatform Global HotKey for Qt5.1 and higher
 
 # Configuration of PRO File
+You have to download library to specials folder in yuor project.
+For example, name of folder is "QGlobalShortcut".
+And include this .pri project in your .pro file.
 ```
-CONFIG += c++11
-
-linux {
-    QT       += x11extras
-    CONFIG   += link_pkgconfig
-    PKGCONFIG += x11
-}
-
-win32: SOURCES += win/qglobalshortcut.cpp
-linux: SOURCES += x11/qglobalshortcut.cpp
-
-HEADERS  += qglobalshortcut.h
+include(QGlobalShortcut/qglobalshortcut.pri)
 ```
