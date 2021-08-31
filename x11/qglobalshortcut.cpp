@@ -130,7 +130,11 @@ QGlobalShortcut::~QGlobalShortcut()
     delete sPrivate;
 }
 
-bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
+#if QT_VERSION >= 0x60000
+    bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result)
+#else
+    bool QGlobalShortcut::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
+#endif
 {
     Q_UNUSED(eventType)
     Q_UNUSED(result)
