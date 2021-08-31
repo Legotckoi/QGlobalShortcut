@@ -14,7 +14,11 @@ public:
     explicit QGlobalShortcut(QObject *parent = nullptr);
     ~QGlobalShortcut();
 
+#if QT_VERSION >= 0x60000
+    bool nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result) override;
+#else
     bool nativeEventFilter(const QByteArray &eventType, void *message, long *result) override;
+#endif
 
     QKeySequence shortcut();
     bool isEmpty();
